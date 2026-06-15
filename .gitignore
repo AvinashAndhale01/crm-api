@@ -1,0 +1,13 @@
+# Python environment
+.venv/
+__pycache__/
+*.pyc
+
+# Tools cache
+.ruff_cache/
+
+# Environment variables (contains passwords/keys)
+.env
+
+# IDE settings
+.vscode/
