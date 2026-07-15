@@ -1,7 +1,11 @@
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
+from typing import TYPE_CHECKING
 from app.db.base import Base, TimestampMixin
+
+
+if TYPE_CHECKING:
+    from app.modules.leads.model import Lead
 
 
 class Contact(TimestampMixin, Base):

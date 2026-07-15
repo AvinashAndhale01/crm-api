@@ -24,7 +24,6 @@ class LeadSource(str, Enum):
     WEBSITE = "website"
     GOOGLE_ADS = "google_ads"
     FACEBOOK_ADS = "facebook_ads"
-    WEBSITE = "website"
     REFERRAL = "referral"
     EMAIL = "email"
     SOCIAL_MEDIA = "social_media"

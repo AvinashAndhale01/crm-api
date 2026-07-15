@@ -1,11 +1,18 @@
 from datetime import datetime
 from decimal import Decimal
-
+from typing import TYPE_CHECKING
 from sqlalchemy import DateTime, Enum, ForeignKey, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.enums import LeadSource, LeadStatus
 from app.db.base import Base, TimestampMixin
+
+
+if TYPE_CHECKING:
+    from app.modules.contacts.model import Contact
+    from app.modules.followups.model import Followup
+    from app.modules.notes.model import Note
+    from app.modules.users.model import User
 
 
 class Lead(TimestampMixin, Base):

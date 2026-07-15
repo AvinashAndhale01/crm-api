@@ -1,8 +1,13 @@
 from sqlalchemy import Boolean, Enum, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
+from typing import TYPE_CHECKING
 from app.core.enums import RoleType
 from app.db.base import Base, TimestampMixin
+
+
+if TYPE_CHECKING:
+    from app.modules.leads.model import Lead
+    from app.modules.notes.model import Note
 
 
 class User(TimestampMixin, Base):
