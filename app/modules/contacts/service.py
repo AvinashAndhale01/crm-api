@@ -6,10 +6,11 @@ from app.modules.contacts.schema import (
     ContactUpdate,
     PaginatedContactsResponse,
 )
+from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
 
-def _get_contact_by_id(contact_id: int, session: SessionDep) -> Contact:
+def _get_contact_by_id(contact_id: int, session: Session) -> Contact:
     contact = session.get(Contact, contact_id)
     if not contact:
         raise HTTPException(
