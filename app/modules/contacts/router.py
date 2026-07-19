@@ -12,9 +12,14 @@ from app.modules.contacts.schema import (
 router = APIRouter(prefix="/contacts", tags=["contacts"])
 
 
-@router.get("/search/", response_model=list[ContactResponse])
-async def search_contacts(query: str, session: SessionDep):
-    return service.search_contacts(query, session)
+@router.get("/search/", response_model=PaginatedContactsResponse)
+async def search_contacts(
+    query: str,
+    session: SessionDep,
+    limit: int = Query(default=10, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+):
+    return service.search_contacts(query, limit, offset, session)
 
 
 @router.get("/{contact_id}", response_model=ContactResponse)

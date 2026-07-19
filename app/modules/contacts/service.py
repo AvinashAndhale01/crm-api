@@ -18,11 +18,13 @@ def _get_contact_by_id(contact_id: int, session: SessionDep) -> Contact:
     return contact
 
 
-def get_contact(contact_id: int, session: SessionDep):
+def get_contact(contact_id: int, session: SessionDep) -> Contact:
     return _get_contact_by_id(contact_id, session)
 
 
-def get_contacts(session: SessionDep, limit: int, offset: int):
+def get_contacts(
+    session: SessionDep, limit: int, offset: int
+) -> PaginatedContactsResponse:
     contacts = session.query(Contact).limit(limit).offset(offset).all()
     total = session.query(Contact).count()
     return PaginatedContactsResponse(
@@ -33,7 +35,7 @@ def get_contacts(session: SessionDep, limit: int, offset: int):
     )
 
 
-def create_contact(contact: ContactCreate, session: SessionDep):
+def create_contact(contact: ContactCreate, session: SessionDep) -> Contact:
     db_contact = Contact(**contact.model_dump())
     session.add(db_contact)
     session.commit()
@@ -41,7 +43,9 @@ def create_contact(contact: ContactCreate, session: SessionDep):
     return db_contact
 
 
-def update_contact(contact_id: int, contact: ContactUpdate, session: SessionDep):
+def update_contact(
+    contact_id: int, contact: ContactUpdate, session: SessionDep
+) -> Contact:
     db_contact = _get_contact_by_id(contact_id, session)
     for key, value in contact.model_dump(exclude_unset=True).items():
         setattr(db_contact, key, value)
@@ -50,24 +54,34 @@ def update_contact(contact_id: int, contact: ContactUpdate, session: SessionDep)
     return db_contact
 
 
-def delete_contact(contact_id: int, session: SessionDep):
+def delete_contact(contact_id: int, session: SessionDep) -> dict:
     db_contact = _get_contact_by_id(contact_id, session)
     session.delete(db_contact)
     session.commit()
     return {"detail": "Deleted"}
 
 
-def search_contacts(query: str, session: SessionDep):
-    contacts = (
-        session.query(Contact)
-        .filter(
-            or_(
-                Contact.first_name.ilike(f"%{query}%"),
-                Contact.last_name.ilike(f"%{query}%"),
-                Contact.email.ilike(f"%{query}%"),
-                Contact.phone.ilike(f"%{query}%"),
-            )
+def search_contacts(
+    query: str, limit: int, offset: int, session: SessionDep
+) -> PaginatedContactsResponse:
+    query = query.strip()
+    if not query:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Query cannot be empty"
         )
-        .all()
+    search_filter = or_(
+        Contact.first_name.ilike(f"%{query}%"),
+        Contact.last_name.ilike(f"%{query}%"),
+        Contact.email.ilike(f"%{query}%"),
+        Contact.phone.ilike(f"%{query}%"),
     )
-    return contacts
+    contacts = (
+        session.query(Contact).filter(search_filter).limit(limit).offset(offset).all()
+    )
+    total = session.query(Contact).filter(search_filter).count()
+    return PaginatedContactsResponse(
+        total=total,
+        limit=limit,
+        offset=offset,
+        items=contacts,
+    )
