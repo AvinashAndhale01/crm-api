@@ -1,16 +1,17 @@
 from typing import Annotated
 import jwt
-from fastapi import HTTPException, Session, Depends, status
+from fastapi import HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordBearer
 from app.core.config import settings
 from app.modules.users.model import User
+from app.dependencies.db import SessionDep
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
 
 async def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)], session: Session
+    token: Annotated[str, Depends(oauth2_scheme)], session: SessionDep
 ):
     creadentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
